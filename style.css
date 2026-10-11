@@ -1,0 +1,401 @@
+/* ------------------------------------------------------------
+   Stellschrauben
+   Alle Masse sind feste Pixelwerte (--u = 1px).
+   Zum Mitskalieren: --u auf calc(100vw / 1440) setzen.
+   ------------------------------------------------------------ */
+:root {
+  --paper: #BE939E;   /* Seitenhintergrund, gleich wie "paper" in shader.js */
+  --light: #F1F3E9;   /* Schrift auf der Seite und Flächen der Buttons */
+  --dark: #302528;    /* Schrift in den Buttons und OK-Feld */
+
+  --u: 1px;
+
+  --fs-title: calc(var(--u) * 370);
+  --fs-body: calc(var(--u) * 60);
+  --fs-button: calc(var(--u) * 40);
+  --lh: 0.9;
+  --tracking: -0.03em;                 /* Laufweite: -3 % */
+
+  --margin: calc(var(--u) * 35);       /* Rand zum Fenster */
+  --bar-h: calc(var(--u) * 160);       /* Höhe der Buttons */
+  --pill-r: calc(var(--bar-h) / 2);    /* Eckenradius des runden Buttons */
+  --ok-inset: calc(var(--u) * 16);     /* Abstand OK-Feld zum Buttonrand */
+  --bar-gap: calc(var(--u) * 16);      /* Abstand zwischen den Buttons */
+  --dock-gap: calc(var(--u) * 100);    /* Mindestabstand Text zu Buttons */
+  --hover-grow: calc(var(--u) * 4);    /* Buttons wachsen bei Mouseover links und rechts */
+  --hover-fade: 300ms;                 /* Dauer dieses Wachsens */
+  --text-w: calc(var(--u) * 900);      /* Spaltenbreite Fliesstext */
+
+  --scroll-len: 60vh;                  /* Scrollstrecke für Eins – Zwei – Brei */
+  --morph: 550ms;                      /* Dauer Button-Umbau */
+  --ease: cubic-bezier(0.65, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--paper); }
+
+body {
+  margin: 0;
+  color: var(--light);
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 700;
+  font-size: var(--fs-body);
+  line-height: var(--lh);
+  letter-spacing: var(--tracking);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+p, h1 { margin: 0; font-weight: 700; }
+
+button, input {
+  font: inherit;
+  color: inherit;
+  line-height: var(--lh);
+  letter-spacing: inherit;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Shader-Ebene ---------- */
+#shader {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---------- Eckdaten, oben im ersten Viewport ---------- */
+.facts {
+  position: absolute;
+  inset: 0 0 auto 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--margin);
+  pointer-events: none;
+}
+
+/* ---------- Titel ---------- */
+main { position: relative; z-index: 1; }
+
+.intro { height: calc(100vh + var(--scroll-len)); }
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.title {
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-title);
+  line-height: var(--lh);
+}
+.title span { grid-area: 1 / 1; }
+
+/* Ohne JavaScript steht einfach «Brei». Mit JS harter Wechsel, kein Fade. */
+.title span:not(:last-child) { visibility: hidden; }
+.js .title span { visibility: hidden; }
+.js .title[data-word="0"] span:nth-child(1),
+.js .title[data-word="1"] span:nth-child(2),
+.js .title[data-word="2"] span:nth-child(3) { visibility: visible; }
+
+/* ---------- Fliesstext ---------- */
+/* Letzter Viewport: Text dockt oben an, Buttons docken unten an */
+.text {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--margin);
+}
+.text > p {
+  width: min(var(--text-w), 100% - var(--margin) * 2);
+  margin: 0 auto;
+}
+
+/* ---------- Buttons ----------
+   .dock ist der Raum zwischen Text und unterem Rand. Die Buttons kleben
+   darin am unteren Bildschirmrand: Sie fahren direkt hinter dem Text
+   herein, bleiben unten stehen, der Text läuft weiter nach oben. */
+.dock {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-top: var(--dock-gap);
+}
+.rsvp {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  padding: 0 var(--margin) var(--margin);
+  font-size: var(--fs-button);
+  pointer-events: none;
+}
+
+.pill {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: var(--bar-h);
+  color: var(--dark);
+  white-space: nowrap;
+  pointer-events: auto;
+  transition:
+    flex-grow var(--morph) var(--ease),
+    margin var(--morph) var(--ease),
+    opacity calc(var(--morph) * 0.6) ease;
+}
+
+/* Die Fläche des Buttons ist eine eigene Ebene hinter dem Inhalt. So kann sie
+   bei Mouseover als eine einzige Form breiter werden, ohne dass sich das
+   Layout verschiebt. */
+.pill::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--light);
+  border-radius: inherit;
+  transition:
+    left var(--hover-fade) ease,
+    right var(--hover-fade) ease;
+}
+
+/* Mouseover: links und rechts um --hover-grow breiter, die Höhe bleibt.
+   Nur solange noch nichts gewählt ist. */
+@media (hover: hover) {
+  .rsvp[data-state="idle"] .pill:hover::before {
+    left: calc(var(--hover-grow) * -1);
+    right: calc(var(--hover-grow) * -1);
+  }
+}
+.pill--yes { border-radius: var(--pill-r); }
+.pill--no  { margin-left: var(--bar-gap); }
+
+/* Der jeweils andere Button klappt zu */
+.rsvp[data-state="yes"]  .pill--no,
+.rsvp[data-state="sent"] .pill--no,
+.rsvp[data-state="no"]   .pill--yes {
+  flex-grow: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;   /* zugeklappt darf nichts überstehen, sonst wird die Seite breiter */
+}
+.rsvp[data-state="yes"]  .pill--no,
+.rsvp[data-state="sent"] .pill--no { margin-left: 0; }
+.rsvp[data-state="no"]   .pill--no { margin-left: 0; }
+
+/* Ebenen im Button: immer nur eine sichtbar */
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity calc(var(--morph) * 0.5) ease,
+    visibility 0s linear calc(var(--morph) * 0.5);
+}
+.rsvp[data-state="idle"] .choice,
+.rsvp[data-state="yes"]  .form,
+.rsvp[data-state="sent"] .done,
+.rsvp[data-state="no"]   .bye {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity calc(var(--morph) * 0.6) ease calc(var(--morph) * 0.4),
+    visibility 0s;
+}
+
+/* ---------- Zusage: Name, +1, OK ---------- */
+.form { justify-content: flex-start; }
+
+.name {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0 calc(var(--u) * 30) 0 calc(var(--u) * 55);
+  outline: none;
+  caret-color: var(--dark);
+}
+.name::placeholder { color: var(--dark); opacity: 1; }
+.name:focus::placeholder { opacity: 0.3; }
+
+/* bleibt innerhalb des Buttons: ein weit ausserhalb liegendes Feld könnte
+   die Seite dorthin springen lassen, falls es doch einmal den Fokus bekommt */
+.hp {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.plus {
+  flex: none;
+  width: calc(var(--u) * 190);
+  height: 100%;
+  opacity: 0.3;
+  transition: opacity 200ms ease;
+}
+.plus[aria-pressed="true"] { opacity: 1; }
+
+.ok {
+  flex: none;
+  width: calc(var(--bar-h) - var(--ok-inset) * 2);
+  height: calc(var(--bar-h) - var(--ok-inset) * 2);
+  margin-right: var(--ok-inset);
+  border-radius: 50%;
+  color: var(--light);
+  position: relative;
+  isolation: isolate;
+  transition: transform 150ms ease;
+}
+/* Die dunkle Fläche des OK-Felds ist wie bei den Buttons eine eigene Ebene, damit
+   sie bei Mouseover rundum um --hover-grow wachsen kann. */
+.ok::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--dark);
+  transition:
+    top var(--hover-fade) ease,
+    right var(--hover-fade) ease,
+    bottom var(--hover-fade) ease,
+    left var(--hover-fade) ease;
+}
+@media (hover: hover) {
+  .ok:hover::before {
+    top: calc(var(--hover-grow) * -1);
+    right: calc(var(--hover-grow) * -1);
+    bottom: calc(var(--hover-grow) * -1);
+    left: calc(var(--hover-grow) * -1);
+  }
+}
+.ok:active { transform: scale(0.96); }
+
+/* Leerer Name beim Absenden: kurzes Wackeln statt Fehlermeldung */
+.form.is-missing .name { animation: nudge 360ms ease; }
+@keyframes nudge {
+  25% { transform: translateX(calc(var(--u) * -8)); }
+  75% { transform: translateX(calc(var(--u) * 8)); }
+}
+
+/* ---------- Fokus für Tastatur ---------- */
+.choice:focus-visible,
+.bye:focus-visible,
+.plus:focus-visible {
+  outline: calc(var(--u) * 3) solid var(--dark);
+  outline-offset: calc(var(--u) * -12);
+  border-radius: inherit;
+}
+.pill--yes .choice:focus-visible { border-radius: var(--pill-r); }
+.ok:focus-visible {
+  outline: calc(var(--u) * 3) solid var(--light);
+  outline-offset: calc(var(--u) * -10);
+}
+
+/* ------------------------------------------------------------
+   Mobile (und schmale Fenster bis 900 px)
+   ------------------------------------------------------------ */
+@media (max-width: 900px) {
+  :root {
+    --fs-title: min(160px, 44vw);      /* 160 px, auf sehr schmalen Geräten kleiner */
+    --fs-body: 32px;
+    --fs-button: 32px;
+
+    --margin: 20px;
+    --bar-h: 250px;
+    --bar-gap: 14px;
+    --dock-gap: 60px;
+    --pill-r: 75px;
+    --ok-inset: 30px;
+    --ok-h: 90px;                      /* Höhe OK-Feld */
+  }
+
+  /* Eckdaten: drei Zeilen untereinander, links */
+  .facts { flex-direction: column; }
+
+  /* Auswahl-Buttons: jedes Wort auf einer eigenen Zeile */
+  .choice span {
+    display: block;
+    width: min-content;
+    white-space: normal;
+    text-align: center;
+  }
+  .done,
+  .bye {
+    white-space: normal;
+    text-align: center;
+    padding: 0 var(--ok-inset);
+  }
+
+  /* Zusage: oben Name und +1, darunter das OK-Feld über die ganze Breite.
+     Sein Radius ist Aussenradius minus Abstand, die Rundungen laufen
+     dadurch parallel zur Aussenform. */
+  .form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 0 var(--ok-inset) var(--ok-inset);
+  }
+  .name { padding: 0; }
+  .plus {
+    width: auto;
+    padding-left: 20px;
+  }
+  .ok {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: var(--ok-h);
+    margin: 0;
+    border-radius: calc(var(--pill-r) - var(--ok-inset));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --morph: 0ms; --hover-fade: 0ms; }
+  .form.is-missing .name { animation: none; }
+}
