@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Brei</title>
+  <!-- vor dem ersten Rendern setzen, damit der Titel beim Laden nicht überblendet -->
+  <script>document.documentElement.className = 'js';</script>
+  <!-- ?v=… bei jeder Änderung hochzählen, damit Handys die neue Datei laden statt der zwischengespeicherten -->
+  <link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+
+  <!-- Shader-Hintergrund: liegt hinter allem, gezeichnet von shader.js -->
+  <canvas id="shader" aria-hidden="true"></canvas>
+
+  <main>
+    <!-- Erster Viewport: bleibt stehen, Titel springt Eins – Zwei – Brei.
+         Sobald «Brei» steht, scrollen Eckdaten und Titel gemeinsam raus. -->
+    <section class="intro">
+      <div class="stage">
+        <header class="facts">
+          <p>Sa, 7. November<br>ab 11 Uhr</p>
+          <p>8045 Zürich</p>
+        </header>
+        <h1 class="title" data-word="0">
+          <span aria-hidden="true">Eins,</span>
+          <span aria-hidden="true">Zwei,</span>
+          <span>Brei</span>
+        </h1>
+      </div>
+    </section>
+
+    <section class="text">
+      <p>Weil das Jahr bald vorbei ist und vor allem, weil man im Winter was Warmes im Bauch braucht, gibt es am 7. November Haferbrei (aka Porridge) und Kaffee. Bitte kurz Bescheid geben, ob du kommst, damit der Brei immer fliesst!</p>
+
+      <!-- Buttons: kommen hinter dem Text herein und docken unten an -->
+      <div class="dock">
+        <!-- Zustände: idle | yes | no | sent -->
+        <div class="rsvp" data-state="idle">
+
+          <div class="pill pill--yes">
+            <button class="layer choice" type="button" data-choose="yes"><span>klar, ich komme</span></button>
+
+            <form class="layer form" novalidate autocomplete="off">
+              <label class="sr" for="name">Vorname</label>
+              <input class="name" id="name" name="name" type="text" placeholder="Vorname"
+                     maxlength="40" autocapitalize="words" spellcheck="false">
+              <!-- Honeypot: für Menschen unsichtbar, Bots füllen es aus -->
+              <input class="hp" name="zusatz" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <button class="plus" type="button" aria-pressed="false" aria-label="Ich bringe eine Person mit">+1</button>
+              <button class="ok" type="submit">OK</button>
+            </form>
+
+            <p class="layer done" aria-live="polite"></p>
+          </div>
+
+          <div class="pill pill--no">
+            <button class="layer choice" type="button" data-choose="no"><span>ich schaffs leider nicht</span></button>
+            <button class="layer bye" type="button" aria-live="polite">bis ein andermal</button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="shader.js?v=9"></script>
+  <script src="script.js?v=9"></script>
+</body>
+</html>
