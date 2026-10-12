@@ -325,7 +325,7 @@
         "warpScale": 0.66,
         "bands": 1.17,
         "detail": 3,
-        "gamma": 0.34,
+        "gamma": 0.58,
         "contrast": 0.83,
         "bright": 0.04,
         "speed": 0.18,
@@ -339,21 +339,21 @@
         "soft": 0.17,
         "clean": 1,
         "pointer": 1,
-        "ptrRadius": 665,
-        "ptrStrength": 0.68,
+        "ptrRadius": 655,
+        "ptrStrength": 0.42,
         "ptrSoft": 0.7,
         "ptrFlow": 0.75,
         "ptrLag": 1.4,
         "ptrFade": 4,
         "ptrIdle": 1,
         "scroll": 0.1,
-        "fadeTop": 80,
-        "fadeBottom": 80,
+        "fadeTop": 50,
+        "fadeBottom": 50,
         "fadeTouchOnly": 1,
         "ink": "#302528",
         "paper": "#be939e",
         "paused": false,
-        "t0": 35.63
+        "t0": 55.31
       };
     
       function start() {
