@@ -8,7 +8,7 @@
   <!-- vor dem ersten Rendern setzen, damit der Titel beim Laden nicht überblendet -->
   <script>document.documentElement.className = 'js';</script>
   <!-- ?v=… bei jeder Änderung hochzählen, damit Handys die neue Datei laden statt der zwischengespeicherten -->
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
@@ -33,7 +33,15 @@
     </section>
 
     <section class="text">
-      <p>Weil das Jahr bald vorbei ist und vor allem, weil man im Winter was Warmes im Bauch braucht, gibt es am 7. November Haferbrei (aka Porridge) und Kaffee. Bitte kurz Bescheid geben, ob du kommst, damit der Brei immer fliesst!</p>
+      <!-- Zeilenumbrüche für Desktop: <br class="umbruch"> verschieben oder löschen.
+           Auf schmalen Fenstern und Handys sind sie ausgeschaltet. -->
+      <p>Weil das Jahr bald vorbei ist und<br class="umbruch">
+        vor allem, weil man im Winter<br class="umbruch">
+        was Warmes im Bauch braucht,<br class="umbruch">
+        gibt es am&nbsp;7.&nbsp;November Haferbrei<br class="umbruch">
+        (aka&nbsp;Porridge) und Kaffee. Bitte<br class="umbruch">
+        kurz Bescheid geben, ob du kommst,<br class="umbruch">
+        damit der Brei immer fliesst!</p>
 
       <!-- Buttons: kommen hinter dem Text herein und docken unten an -->
       <div class="dock">
@@ -66,7 +74,7 @@
     </section>
   </main>
 
-  <script src="shader.js?v=9"></script>
-  <script src="script.js?v=9"></script>
+  <script src="shader.js?v=10"></script>
+  <script src="script.js?v=10"></script>
 </body>
 </html>
