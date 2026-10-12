@@ -164,7 +164,6 @@ main { position: relative; z-index: 1; }
   padding: 0 var(--margin) var(--margin);
   font-size: var(--fs-button);
   pointer-events: none;
-  transition: transform 200ms ease;   /* Anheben über die Handy-Tastatur */
 }
 
 .pill {
