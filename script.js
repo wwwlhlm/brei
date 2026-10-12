@@ -198,35 +198,4 @@
     });
   });
   window.addEventListener('touchstart', stopGuard, { passive: true });
-
-  // Tastatur auf dem Handy: Schiebt Safari das Namensfeld nicht selbst über
-  // die Tastatur, hebt die Seite die Buttonleiste so weit an, dass sie
-  // sichtbar bleibt. Am Desktop und wenn alles passt, passiert nichts.
-  const vv = window.visualViewport;
-  let lift = 0;
-  let liftFrame = 0;
-  const setLift = (px) => {
-    lift = px;
-    rsvp.style.transform = px > 0 ? `translateY(${-px}px)` : '';
-  };
-  function keepVisible() {
-    liftFrame = 0;
-    if (!vv) return;
-    if (document.activeElement !== nameInput) { setLift(0); return; }
-    const box = rsvp.querySelector('.pill--yes').getBoundingClientRect();
-    const visibleBottom = vv.offsetTop + vv.height;
-    const overlap = box.bottom - visibleBottom + 12;   // 12 px Luft zur Tastatur
-    if (overlap > 1 || (overlap < -1 && lift > 0)) setLift(Math.max(0, lift + overlap));
-  }
-  const scheduleKeepVisible = () => {
-    if (!liftFrame) liftFrame = requestAnimationFrame(keepVisible);
-  };
-  if (vv) {
-    vv.addEventListener('resize', scheduleKeepVisible);
-    vv.addEventListener('scroll', scheduleKeepVisible);
-  }
-  nameInput.addEventListener('focus', () => {
-    [0, 150, 400].forEach((ms) => setTimeout(scheduleKeepVisible, ms));
-  });
-  nameInput.addEventListener('blur', () => setLift(0));
 })();
