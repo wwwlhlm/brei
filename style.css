@@ -140,6 +140,34 @@ main { position: relative; z-index: 1; }
   text-wrap: pretty;   /* wo nicht von Hand umbrochen wird: keine einzelnen Wörter in der letzten Zeile */
 }
 
+/* Hochgestellter Link hinter «Haferbrei» */
+.ref {
+  display: inline-block;
+  margin-left: 0.04em;
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+  top: -0.28em;          /* höher oder tiefer setzen */
+}
+.ref svg {
+  display: block;
+  height: 0.4em;         /* Grösse relativ zur Schrift: 24 px bei 60 px */
+  width: auto;
+  overflow: visible;
+}
+.ref svg [stroke] { fill: none; }   /* Pfeile nur als Linie, nicht gefüllt */
+.ref::after {                        /* grössere Tippfläche auf dem Handy, unsichtbar */
+  content: "";
+  position: absolute;
+  inset: -12px;
+}
+.ref-b { display: none !important; }
+@media (hover: hover) {
+  .ref:hover .ref-a { display: none !important; }
+  .ref:hover .ref-b { display: block !important; }
+}
+.ref:focus-visible { outline: 2px solid currentColor; outline-offset: 0.08em; }
+
 /* Die Umbrüche von Hand gelten nur, solange die Spalte die volle Breite hat */
 @media (max-width: 1000px) {
   .umbruch { display: none; }
