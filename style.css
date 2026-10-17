@@ -137,8 +137,12 @@ main { position: relative; z-index: 1; }
 .text > p {
   width: min(var(--text-w), 100% - var(--margin) * 2);
   margin: 0 auto;
-  text-wrap: pretty;   /* wo nicht von Hand umbrochen wird: keine einzelnen Wörter in der letzten Zeile */
+  text-wrap: pretty;   /* Rückfall für Browser ohne «balance» */
+  text-wrap: balance;  /* Zeilen möglichst gleich lang; wirkt nur, wo nicht von Hand umbrochen wird */
 }
+
+/* «Haferbrei» und Link-Zeichen nur gemeinsam umbrechen */
+.nobr { white-space: nowrap; }
 
 /* Hochgestellter Link hinter «Haferbrei» */
 .ref {
